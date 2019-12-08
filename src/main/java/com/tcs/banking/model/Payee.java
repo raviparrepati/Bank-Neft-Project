@@ -7,12 +7,16 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.SequenceGenerator;
+
+import com.fasterxml.jackson.annotation.JsonBackReference;
 
 @Entity
 public class Payee {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SUMMARY_GENERATOR")
+	@SequenceGenerator(name = "SUMMARY_GENERATOR", sequenceName = "SUMMARY_SEQ", initialValue = 6, allocationSize = 10000)
 	private int payeeId;
 	@Column(name = "custId")
 	private int custId;
@@ -23,6 +27,7 @@ public class Payee {
 
 	@ManyToOne
 	@JoinColumn
+	@JsonBackReference
 	private Customer customer;
 
 	public int getPayeeId() {

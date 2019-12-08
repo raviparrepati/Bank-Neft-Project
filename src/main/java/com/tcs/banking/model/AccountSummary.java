@@ -1,29 +1,37 @@
 package com.tcs.banking.model;
 
-import java.sql.Date;
+import java.util.Date;
 
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.SequenceGenerator;
+
+import com.fasterxml.jackson.annotation.JsonBackReference;
 
 @Entity
+//@TableGenerator(name="summaryGenerator", initialValue=3, allocationSize = 600)
 public class AccountSummary {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
-	@Column(name = "summaryId")
+//	@GeneratedValue(strategy=GenerationType.TABLE, generator="summaryGenerator")
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SUMMARY_GENERATOR")
+	@SequenceGenerator(name = "SUMMARY_GENERATOR", sequenceName = "SUMMARY_SEQ", initialValue = 6, allocationSize = 10000)
 	private int summaryId;
-	
-	@Column(name = "custId")
 	private int custId;
-	
 	private String referenceNumber;
 	private Date transactionDate;
-	private double depositedAmount;
+	private double debitedAmount;
 	private double creaditedAmount;
 	private double closingBalance;
+
+	@ManyToOne
+	@JoinColumn
+	@JsonBackReference
+	private Customer customer;
 
 	public int getSummaryId() {
 		return summaryId;
@@ -57,12 +65,12 @@ public class AccountSummary {
 		this.transactionDate = transactionDate;
 	}
 
-	public double getDepositedAmount() {
-		return depositedAmount;
+	public double getDebitedAmount() {
+		return debitedAmount;
 	}
 
-	public void setDepositedAmount(double depositedAmount) {
-		this.depositedAmount = depositedAmount;
+	public void setDebitedAmount(double debitedAmount) {
+		this.debitedAmount = debitedAmount;
 	}
 
 	public double getCreaditedAmount() {
@@ -81,20 +89,52 @@ public class AccountSummary {
 		this.closingBalance = closingBalance;
 	}
 
-	public AccountSummary(int summaryId, int custId, String referenceNumber, Date transactionDate,
-			double depositedAmount, double creaditedAmount, double closingBalance) {
+	public AccountSummary(int summaryId, int custId, String referenceNumber, Date transactionDate, double debitedAmount,
+			double creaditedAmount, double closingBalance) {
 		super();
 		this.summaryId = summaryId;
 		this.custId = custId;
 		this.referenceNumber = referenceNumber;
 		this.transactionDate = transactionDate;
-		this.depositedAmount = depositedAmount;
+		this.debitedAmount = debitedAmount;
+		this.creaditedAmount = creaditedAmount;
+		this.closingBalance = closingBalance;
+	}
+
+	public AccountSummary(int custId, String referenceNumber, Date transactionDate, double debitedAmount,
+			double creaditedAmount, double closingBalance) {
+		super();
+		this.custId = custId;
+		this.referenceNumber = referenceNumber;
+		this.transactionDate = transactionDate;
+		this.debitedAmount = debitedAmount;
 		this.creaditedAmount = creaditedAmount;
 		this.closingBalance = closingBalance;
 	}
 
 	public AccountSummary() {
-		
+
+	}
+
+	public AccountSummary(int summaryId, int custId, String referenceNumber, Date transactionDate, double debitedAmount,
+			double creaditedAmount, double closingBalance, Customer customer) {
+		super();
+		this.summaryId = summaryId;
+		this.custId = custId;
+		this.referenceNumber = referenceNumber;
+		this.transactionDate = transactionDate;
+		this.debitedAmount = debitedAmount;
+		this.creaditedAmount = creaditedAmount;
+		this.closingBalance = closingBalance;
+		this.customer = customer;
+	}
+
+	public Customer getCustomer() {
+		return customer;
+	}
+
+	public void setCustomer(Customer customer) {
+		this.customer = customer;
 	}
 
 	@Override
@@ -102,9 +142,8 @@ public class AccountSummary {
 		StringBuilder builder = new StringBuilder();
 		builder.append("AccountSummary [summaryId=").append(summaryId).append(", custId=").append(custId)
 				.append(", referenceNumber=").append(referenceNumber).append(", transactionDate=")
-				.append(transactionDate).append(", depositedAmount=").append(depositedAmount)
-				.append(", creaditedAmount=").append(creaditedAmount).append(", closingBalance=").append(closingBalance)
-				.append("]");
+				.append(transactionDate).append(", debitedAmount=").append(debitedAmount).append(", creaditedAmount=")
+				.append(creaditedAmount).append(", closingBalance=").append(closingBalance).append("]");
 		return builder.toString();
 	}
 
